@@ -1,0 +1,11 @@
+{
+  "name": "swipe-manager",
+  "version": "0.0.0",
+  "description": "A component to manage horizontal navigation in a mobile website or hybrid application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Plumpnation",
+  "license": "MIT"
+}
