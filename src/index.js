@@ -1,15 +1,13 @@
 var React = require('react'),
+    pageHelper = require('./helpers/page-helper'),
     pageManager = require('./components/page-manager'),
 
     app = document.getElementById('application-container');
 
 React.renderComponent(pageManager({
-  'pages': [{
-    'title': 'boom 1',
-    'body': 'some text that should go in there'
-  },
-  {
-    'title': 'boom 2',
-    'body': 'some text that should go in there'
-  }]
+  'pages': [
+    pageHelper.shortPage(1),
+    pageHelper.longPage(2),
+    pageHelper.shortPage(3)
+  ]
 }), app);
