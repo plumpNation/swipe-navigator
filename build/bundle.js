@@ -4,20 +4,24 @@ var React = require('react'),
     pageManager = require('./components/page-manager'),
     merge = require('merge'),
 
-    app = document.getElementById('application-container');
+    app = document.getElementById('application-container'),
 
-React.renderComponent(pageManager({
+    newPageButton = document.getElementById('add'),
+
+    count = 1;
+
+var manager = React.renderComponent(pageManager({
   'pages': [
-    pageHelper.shortPage(1),
-    pageHelper.longPage(2),
-    merge(pageHelper.shortPage(3), {button: {
-      onClick: function () {
-        console.log('I clicked the page button');
-      },
-      text: 'Click me'
-    }})
+    pageHelper.shortPage(count++),
+    pageHelper.longPage(count++),
+    merge(pageHelper.shortPage(count++))
   ]
 }), app);
+
+newPageButton.addEventListener('click', function () {
+  console.log('Clicked the new page button');
+  manager.addPage(pageHelper.shortPage(count++));
+}, false);
 
 },{"./components/page-manager":"/home/gavin/dev/swipe-manager/src/components/page-manager.js","./helpers/page-helper":"/home/gavin/dev/swipe-manager/src/helpers/page-helper.js","merge":"/home/gavin/dev/swipe-manager/node_modules/merge/merge.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
@@ -18759,21 +18763,9 @@ module.exports = React.createClass({
     this.updatePages(this.props.pages);
   },
 
-  componentDidMount: function () {
-    console.log('Mounted the page-manager');
-
-    document.addEventListener('click', function () {
-      console.log('Clicked the document');
-      // this.addPage({
-      //   key: 'XTRA',
-      //   title: 'Extra page',
-      //   body: 'This is the extra page body'
-      // });
-    }, false);
-  },
-
   addPage: function (pageData) {
     this.state.pages.push(page(pageData));
+    this.setState({'pages': this.state.pages});
   },
 
   updatePages: function (pages) {
@@ -18781,7 +18773,6 @@ module.exports = React.createClass({
       console.log('Updating pages');
 
        pages.forEach(function (pageData, index) {
-         pageData.key = 'page-' + index;
          this.addPage(pageData);
        }.bind(this));
     }
@@ -18801,34 +18792,16 @@ module.exports = React.createClass({
 },{"./page":"/home/gavin/dev/swipe-manager/src/components/page.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/src/components/page.js":[function(require,module,exports){
 var React = require('react');
 
-var makeTheButton = function (buttonData) {
-  React.DOM.button({
-    onClick: buttonData.onClick
-  }, buttonData.text);
-};
-
 module.exports = React.createClass({
-  handleClick: function () {
-    console.log('boom');
-  },
-
   render: function () {
-    var button;
-
-    if (this.props.button) {
-      button = makeTheButton(this.props.button);
-    }
-
     return React.DOM.div({
         className: 'page-component',
-        onClick: this.handleClick
       },
       React.DOM.div({
           className: 'page-component-inner'
         },
         React.DOM.h1(null, this.props.title),
-        React.DOM.p(null, this.props.body),
-        button
+        React.DOM.p(null, this.props.body)
       )
     );
   }
@@ -18846,19 +18819,20 @@ var longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
     return shortText;
 },
 
-  createData = function (title, body) {
+  createData = function (key, body) {
     return {
-        'title': title,
+        'key': key,
+        'title': makeTitle(key),
         'body': body
     };
 }
 
 exports.shortPage = function (n) {
-  return createData(makeTitle(n), shortText);
+  return createData(n, shortText);
 };
 
 exports.longPage = function (n) {
-  return createData(makeTitle(n), longText);
+  return createData(n, longText);
 }
 
 },{}]},{},["./src/index.js"]);

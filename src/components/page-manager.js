@@ -24,21 +24,9 @@ module.exports = React.createClass({
     this.updatePages(this.props.pages);
   },
 
-  componentDidMount: function () {
-    console.log('Mounted the page-manager');
-
-    document.addEventListener('click', function () {
-      console.log('Clicked the document');
-      // this.addPage({
-      //   key: 'XTRA',
-      //   title: 'Extra page',
-      //   body: 'This is the extra page body'
-      // });
-    }, false);
-  },
-
   addPage: function (pageData) {
     this.state.pages.push(page(pageData));
+    this.setState({'pages': this.state.pages});
   },
 
   updatePages: function (pages) {
@@ -46,7 +34,6 @@ module.exports = React.createClass({
       console.log('Updating pages');
 
        pages.forEach(function (pageData, index) {
-         pageData.key = 'page-' + index;
          this.addPage(pageData);
        }.bind(this));
     }

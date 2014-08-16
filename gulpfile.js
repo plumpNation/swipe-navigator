@@ -26,17 +26,12 @@ gulp.task('watch', function() {
   bundler.on('update', rebundle);
 
   function rebundle() {
-    try {
-      lintCode();
 
-      return bundler.bundle()
-        // log errors if they happen
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source('bundle.js'))
-        .pipe(gulp.dest('./build'));
-    } finally {
-      return '';
-    }
+    return bundler.bundle()
+      // log errors if they happen
+      .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./build'));
   }
 
   return rebundle();
@@ -47,4 +42,4 @@ gulp.task('lint', function () {
 });
 
 // The default task (called when you run `gulp` from cli)
-gulp.task('default', ['lint', 'watch']);
+gulp.task('default', ['watch']);

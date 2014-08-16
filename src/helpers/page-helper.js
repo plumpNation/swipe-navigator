@@ -11,17 +11,18 @@ var
     return shortText;
   },
 
-  createData = function (title, body) {
+  createData = function (key, body) {
     return {
-      'title': title,
+      'key': key,
+      'title': makeTitle(key),
       'body': body
     };
   };
 
 exports.shortPage = function (n) {
-  return createData(makeTitle(n), shortText);
+  return createData(n, shortText);
 };
 
 exports.longPage = function (n) {
-  return createData(makeTitle(n), longText);
+  return createData(n, longText);
 }

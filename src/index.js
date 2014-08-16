@@ -3,17 +3,21 @@ var React = require('react'),
     pageManager = require('./components/page-manager'),
     merge = require('merge'),
 
-    app = document.getElementById('application-container');
+    app = document.getElementById('application-container'),
 
-React.renderComponent(pageManager({
+    newPageButton = document.getElementById('add'),
+
+    count = 1;
+
+var manager = React.renderComponent(pageManager({
   'pages': [
-    pageHelper.shortPage(1),
-    pageHelper.longPage(2),
-    merge(pageHelper.shortPage(3), {button: {
-      onClick: function () {
-        console.log('I clicked the page button');
-      },
-      text: 'Click me'
-    }})
+    pageHelper.shortPage(count++),
+    pageHelper.longPage(count++),
+    merge(pageHelper.shortPage(count++))
   ]
 }), app);
+
+newPageButton.addEventListener('click', function () {
+  console.log('Clicked the new page button');
+  manager.addPage(pageHelper.shortPage(count++));
+}, false);

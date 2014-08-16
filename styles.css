@@ -13,6 +13,12 @@ body,
   height: 100%;
 }
 
+#add {
+  position: fixed;
+  top: 0;
+  left: 20%;
+}
+
 .page-wrapper {
   position: relative;
   background: red;
