@@ -4,7 +4,8 @@ var stylish = require('jshint-stylish');
 var watchify = require('gulp-watchify');
 var bundlePaths = {
     src: [
-        'src/index.js'
+        'src/**/*.js',
+        '!src/components/**/*'
     ],
     dest:'build/'
 }

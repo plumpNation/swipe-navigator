@@ -1,10 +1,15 @@
 var React = require('react'),
-    pageManager = require('./page-manager'),
-    page = require('./page'),
+    pageManager = require('./components/page-manager'),
 
     app = document.getElementById('application-container');
 
-var thing = React.renderComponent(page({
-  'title': 'boom',
-  'body': 'some text that should go in there'
+React.renderComponent(pageManager({
+  'pages': [{
+    'title': 'boom 1',
+    'body': 'some text that should go in there'
+  },
+  {
+    'title': 'boom 2',
+    'body': 'some text that should go in there'
+  }]
 }), app);

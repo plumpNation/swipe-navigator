@@ -18631,39 +18631,68 @@ process.chdir = function (dir) {
 
 },{}],146:[function(require,module,exports){
 var React = require('react'),
-    pageManager = require('./page-manager'),
-    page = require('./page'),
-
-    app = document.getElementById('application-container');
-
-var thing = React.renderComponent(page({
-  'title': 'boom',
-  'body': 'some text that should go in there'
-}), app);
-
-},{"./page":148,"./page-manager":147,"react":144}],147:[function(require,module,exports){
-var React = require('react');
+    page = require('./page');
 
 module.exports = React.createClass({
+  handleScroll: function () {
+    console.log('scrolling');
+  },
+
   render: function () {
+    var pages;
+
+    if (this.props.pages !== undefined) {
+      pages = this.props.pages.map(function (pageData, index) {
+        pageData.key = 'page-' + index;
+        return page(pageData);
+      });
+    }
+
     return React.DOM.div({
-      className: 'page-manager'
-    });
+      className: 'page-manager',
+      onScroll: this.handleScroll
+    },
+    pages);
   }
 });
 
-},{"react":144}],148:[function(require,module,exports){
+},{"./page":147,"react":144}],147:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({
+  handleClick: function () {
+    console.log('boom');
+  },
   render: function () {
     return React.DOM.div({
-        className: 'page-component'
+        className: 'page-component',
+        onClick: this.handleClick
       },
-      React.DOM.h1(null, this.props.title),
-      React.DOM.p(null, this.props.body)
+      React.DOM.div({
+          className: 'page-component-inner'
+        },
+        React.DOM.h1(null, this.props.title),
+        React.DOM.p(null, this.props.body)
+      )
     );
   }
 });
 
-},{"react":144}]},{},[146])
+},{"react":144}],148:[function(require,module,exports){
+var React = require('react'),
+    pageManager = require('./components/page-manager'),
+
+    app = document.getElementById('application-container');
+
+React.renderComponent(pageManager({
+  'pages': [{
+    'title': 'boom 1',
+    'body': 'some text that should go in there'
+  },
+  {
+    'title': 'boom 2',
+    'body': 'some text that should go in there'
+  }]
+}), app);
+
+},{"./components/page-manager":146,"react":144}]},{},[148])

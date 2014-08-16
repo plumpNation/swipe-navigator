@@ -1,6 +1,32 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
 .page-wrapper {
-  position: absolute;
+  position: relative;
   width: 300px;
-  height: 500px;
+  height: 400px;
+  background: red;
+  margin: 0 auto;
+}
+
+.page-manager {
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  overflow: auto;
+}
+
+.page-component {
+  padding: 5px;
+  height: 100%;
+  width: 100%;
   background: bisque;
+  display: inline-block;
+}
+
+.page-component-inner {
+  background: yellow;
 }
