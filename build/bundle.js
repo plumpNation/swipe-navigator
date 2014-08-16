@@ -15,7 +15,8 @@ var manager = React.renderComponent(pageManager({
     pageHelper.shortPage(count++),
     pageHelper.longPage(count++),
     merge(pageHelper.shortPage(count++))
-  ]
+  ],
+  scrollLatency: 100
 }), app);
 
 newPageButton.addEventListener('click', function () {
@@ -87,6 +88,68 @@ process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
+
+},{}],"/home/gavin/dev/swipe-manager/node_modules/debounce/index.js":[function(require,module,exports){
+
+/**
+ * Module dependencies.
+ */
+
+var now = require('date-now');
+
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ *
+ * @source underscore.js
+ * @see http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+ * @param {Function} function to wrap
+ * @param {Number} timeout in ms (`100`)
+ * @param {Boolean} whether to execute at the beginning (`false`)
+ * @api public
+ */
+
+module.exports = function debounce(func, wait, immediate){
+  var timeout, args, context, timestamp, result;
+  if (null == wait) wait = 100;
+
+  function later() {
+    var last = now() - timestamp;
+
+    if (last < wait && last > 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      }
+    }
+  };
+
+  return function debounced() {
+    context = this;
+    args = arguments;
+    timestamp = now();
+    var callNow = immediate && !timeout;
+    if (!timeout) timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+
+    return result;
+  };
+};
+
+},{"date-now":"/home/gavin/dev/swipe-manager/node_modules/debounce/node_modules/date-now/index.js"}],"/home/gavin/dev/swipe-manager/node_modules/debounce/node_modules/date-now/index.js":[function(require,module,exports){
+module.exports = Date.now || now
+
+function now() {
+    return new Date().getTime()
+}
 
 },{}],"/home/gavin/dev/swipe-manager/node_modules/merge/merge.js":[function(require,module,exports){
 /*!
@@ -18738,7 +18801,8 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":"/home/gavin/dev/swipe-manager/node_modules/react/lib/React.js"}],"/home/gavin/dev/swipe-manager/src/components/page-manager.js":[function(require,module,exports){
 var React = require('react'),
-    page = require('./page');
+    page = require('./page'),
+    debounce = require('debounce');
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -18747,19 +18811,20 @@ module.exports = React.createClass({
       };
   },
 
-  handleScroll: function () {
-    console.log('scrolling');
-  },
+  scrollStop: function () {
+    var element = this.getDOMNode(),
+        xScroll = element.scrollLeft,
+        scrollWidth = element.scrollWidth,
+        pageWidth = scrollWidth / this.state.pages.length, // or this width??
+        nearestPageX = pageWidth * Math.round(xScroll / pageWidth);
 
-  /**
-   * We only really want this for touch screens, so how to do that?
-   */
-  handleMouseUp: function () {
-    console.log('mouse up');
+    element.scrollLeft = nearestPageX;
+
+    // Scroll smoothly to nearest page
+    console.log('Scrolling has stopped at', xScroll);
   },
 
   componentWillMount: function () {
-    console.log('Page manager will mount');
     this.updatePages(this.props.pages);
   },
 
@@ -18783,13 +18848,13 @@ module.exports = React.createClass({
 
     return React.DOM.div({
       className: 'page-manager',
-      onScroll: this.handleScroll,
+      onScroll: debounce(this.scrollStop, this.props.scrollLatency || 200),
       onMouseUp: this.handleMouseUp,
     }, this.state.pages);
   }
 });
 
-},{"./page":"/home/gavin/dev/swipe-manager/src/components/page.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/src/components/page.js":[function(require,module,exports){
+},{"./page":"/home/gavin/dev/swipe-manager/src/components/page.js","debounce":"/home/gavin/dev/swipe-manager/node_modules/debounce/index.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/src/components/page.js":[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({
@@ -18798,6 +18863,7 @@ module.exports = React.createClass({
         className: 'page-component',
       },
       React.DOM.div({
+          dataScroll: null,
           className: 'page-component-inner'
         },
         React.DOM.h1(null, this.props.title),

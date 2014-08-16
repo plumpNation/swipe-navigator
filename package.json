@@ -9,6 +9,7 @@
   "devDependencies": {
     "brfs": "^1.2.0",
     "browserify": "^5.10.0",
+    "debounce": "^1.0.0",
     "gulp": "^3.8.7",
     "gulp-jshint": "^1.8.4",
     "gulp-util": "^3.0.0",

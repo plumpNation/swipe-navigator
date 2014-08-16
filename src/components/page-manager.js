@@ -1,5 +1,6 @@
 var React = require('react'),
-    page = require('./page');
+    page = require('./page'),
+    debounce = require('debounce');
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -8,19 +9,20 @@ module.exports = React.createClass({
       };
   },
 
-  handleScroll: function () {
-    console.log('scrolling');
-  },
+  scrollStop: function () {
+    var element = this.getDOMNode(),
+        xScroll = element.scrollLeft,
+        scrollWidth = element.scrollWidth,
+        pageWidth = scrollWidth / this.state.pages.length, // or this width??
+        nearestPageX = pageWidth * Math.round(xScroll / pageWidth);
 
-  /**
-   * We only really want this for touch screens, so how to do that?
-   */
-  handleMouseUp: function () {
-    console.log('mouse up');
+    element.scrollLeft = nearestPageX;
+
+    // Scroll smoothly to nearest page
+    console.log('Scrolling has stopped at', xScroll);
   },
 
   componentWillMount: function () {
-    console.log('Page manager will mount');
     this.updatePages(this.props.pages);
   },
 
@@ -44,7 +46,7 @@ module.exports = React.createClass({
 
     return React.DOM.div({
       className: 'page-manager',
-      onScroll: this.handleScroll,
+      onScroll: debounce(this.scrollStop, this.props.scrollLatency || 200),
       onMouseUp: this.handleMouseUp,
     }, this.state.pages);
   }

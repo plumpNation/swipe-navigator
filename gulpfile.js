@@ -9,7 +9,7 @@ var stylish = require('jshint-stylish');
 
 
 var lintCode = function () {
-  return gulp.src('./src/*.js')
+  return gulp.src(['./src/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter(stylish))
     .pipe(jshint.reporter('fail'));

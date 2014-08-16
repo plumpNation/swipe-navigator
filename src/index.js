@@ -14,7 +14,8 @@ var manager = React.renderComponent(pageManager({
     pageHelper.shortPage(count++),
     pageHelper.longPage(count++),
     merge(pageHelper.shortPage(count++))
-  ]
+  ],
+  scrollLatency: 100
 }), app);
 
 newPageButton.addEventListener('click', function () {

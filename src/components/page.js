@@ -6,6 +6,7 @@ module.exports = React.createClass({
         className: 'page-component',
       },
       React.DOM.div({
+          dataScroll: null,
           className: 'page-component-inner'
         },
         React.DOM.h1(null, this.props.title),
