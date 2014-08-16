@@ -2,6 +2,7 @@
 var React = require('react'),
     pageHelper = require('./helpers/page-helper'),
     pageManager = require('./components/page-manager'),
+    merge = require('merge'),
 
     app = document.getElementById('application-container');
 
@@ -9,11 +10,16 @@ React.renderComponent(pageManager({
   'pages': [
     pageHelper.shortPage(1),
     pageHelper.longPage(2),
-    pageHelper.shortPage(3)
+    merge(pageHelper.shortPage(3), {button: {
+      onClick: function () {
+        console.log('I clicked the page button');
+      },
+      text: 'Click me'
+    }})
   ]
 }), app);
 
-},{"./components/page-manager":"/home/gavin/dev/swipe-manager/src/components/page-manager.js","./helpers/page-helper":"/home/gavin/dev/swipe-manager/src/helpers/page-helper.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"./components/page-manager":"/home/gavin/dev/swipe-manager/src/components/page-manager.js","./helpers/page-helper":"/home/gavin/dev/swipe-manager/src/helpers/page-helper.js","merge":"/home/gavin/dev/swipe-manager/node_modules/merge/merge.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -78,6 +84,88 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
+},{}],"/home/gavin/dev/swipe-manager/node_modules/merge/merge.js":[function(require,module,exports){
+/*!
+ * @name JavaScript/NodeJS Merge v1.1.3
+ * @author yeikos
+ * @repository https://github.com/yeikos/js.merge
+
+ * Copyright 2014 yeikos - MIT license
+ * https://raw.github.com/yeikos/js.merge/master/LICENSE
+ */
+
+;(function(isNode) {
+
+	function merge() {
+
+		var items = Array.prototype.slice.call(arguments),
+			result = items.shift(),
+			deep = (result === true),
+			size = items.length,
+			item, index, key;
+
+		if (deep || typeOf(result) !== 'object')
+
+			result = {};
+
+		for (index=0;index<size;++index)
+
+			if (typeOf(item = items[index]) === 'object')
+
+				for (key in item)
+
+					result[key] = deep ? clone(item[key]) : item[key];
+
+		return result;
+
+	}
+
+	function clone(input) {
+
+		var output = input,
+			type = typeOf(input),
+			index, size;
+
+		if (type === 'array') {
+
+			output = [];
+			size = input.length;
+
+			for (index=0;index<size;++index)
+
+				output[index] = clone(input[index]);
+
+		} else if (type === 'object') {
+
+			output = {};
+
+			for (index in input)
+
+				output[index] = clone(input[index]);
+
+		}
+
+		return output;
+
+	}
+
+	function typeOf(input) {
+
+		return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+	}
+
+	if (isNode) {
+
+		module.exports = merge;
+
+	} else {
+
+		window.merge = merge;
+
+	}
+
+})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
 },{}],"/home/gavin/dev/swipe-manager/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014 Facebook, Inc.
@@ -18651,7 +18739,7 @@ var React = require('react'),
 module.exports = React.createClass({
   getInitialState: function () {
       return {
-        pageCount: 0
+        pages: []
       };
   },
 
@@ -18659,32 +18747,78 @@ module.exports = React.createClass({
     console.log('scrolling');
   },
 
-  render: function () {
-    var pages;
+  /**
+   * We only really want this for touch screens, so how to do that?
+   */
+  handleMouseUp: function () {
+    console.log('mouse up');
+  },
 
-    if (this.props.pages !== undefined) {
-      pages = this.props.pages.map(function (pageData, index) {
-        this.state.pageCount += 1;
-        pageData.key = 'page-' + index;
-        return page(pageData);
-      }.bind(this));
+  componentWillMount: function () {
+    console.log('Page manager will mount');
+    this.updatePages(this.props.pages);
+  },
+
+  componentDidMount: function () {
+    console.log('Mounted the page-manager');
+
+    document.addEventListener('click', function () {
+      console.log('Clicked the document');
+      // this.addPage({
+      //   key: 'XTRA',
+      //   title: 'Extra page',
+      //   body: 'This is the extra page body'
+      // });
+    }, false);
+  },
+
+  addPage: function (pageData) {
+    this.state.pages.push(page(pageData));
+  },
+
+  updatePages: function (pages) {
+    if (pages !== undefined) {
+      console.log('Updating pages');
+
+       pages.forEach(function (pageData, index) {
+         pageData.key = 'page-' + index;
+         this.addPage(pageData);
+       }.bind(this));
     }
+  },
+
+  render: function () {
+    console.log('Rendering');
 
     return React.DOM.div({
       className: 'page-manager',
-      onScroll: this.handleScroll
-    }, pages);
+      onScroll: this.handleScroll,
+      onMouseUp: this.handleMouseUp,
+    }, this.state.pages);
   }
 });
 
 },{"./page":"/home/gavin/dev/swipe-manager/src/components/page.js","react":"/home/gavin/dev/swipe-manager/node_modules/react/react.js"}],"/home/gavin/dev/swipe-manager/src/components/page.js":[function(require,module,exports){
 var React = require('react');
 
+var makeTheButton = function (buttonData) {
+  React.DOM.button({
+    onClick: buttonData.onClick
+  }, buttonData.text);
+};
+
 module.exports = React.createClass({
   handleClick: function () {
     console.log('boom');
   },
+
   render: function () {
+    var button;
+
+    if (this.props.button) {
+      button = makeTheButton(this.props.button);
+    }
+
     return React.DOM.div({
         className: 'page-component',
         onClick: this.handleClick
@@ -18693,7 +18827,8 @@ module.exports = React.createClass({
           className: 'page-component-inner'
         },
         React.DOM.h1(null, this.props.title),
-        React.DOM.p(null, this.props.body)
+        React.DOM.p(null, this.props.body),
+        button
       )
     );
   }

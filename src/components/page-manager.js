@@ -4,7 +4,7 @@ var React = require('react'),
 module.exports = React.createClass({
   getInitialState: function () {
       return {
-        pageCount: 0
+        pages: []
       };
   },
 
@@ -12,20 +12,53 @@ module.exports = React.createClass({
     console.log('scrolling');
   },
 
-  render: function () {
-    var pages;
+  /**
+   * We only really want this for touch screens, so how to do that?
+   */
+  handleMouseUp: function () {
+    console.log('mouse up');
+  },
 
-    if (this.props.pages !== undefined) {
-      pages = this.props.pages.map(function (pageData, index) {
-        this.state.pageCount += 1;
-        pageData.key = 'page-' + index;
-        return page(pageData);
-      }.bind(this));
+  componentWillMount: function () {
+    console.log('Page manager will mount');
+    this.updatePages(this.props.pages);
+  },
+
+  componentDidMount: function () {
+    console.log('Mounted the page-manager');
+
+    document.addEventListener('click', function () {
+      console.log('Clicked the document');
+      // this.addPage({
+      //   key: 'XTRA',
+      //   title: 'Extra page',
+      //   body: 'This is the extra page body'
+      // });
+    }, false);
+  },
+
+  addPage: function (pageData) {
+    this.state.pages.push(page(pageData));
+  },
+
+  updatePages: function (pages) {
+    if (pages !== undefined) {
+      console.log('Updating pages');
+
+       pages.forEach(function (pageData, index) {
+         pageData.key = 'page-' + index;
+         this.addPage(pageData);
+       }.bind(this));
     }
+  },
+
+  render: function () {
+    console.log('Rendering');
 
     return React.DOM.div({
       className: 'page-manager',
-      onScroll: this.handleScroll
-    }, pages);
+      onScroll: this.handleScroll,
+      onMouseUp: this.handleMouseUp,
+    }, this.state.pages);
   }
 });
