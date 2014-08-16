@@ -6,6 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "gulp-jshint": "^1.8.4",
+    "gulp-rename": "^1.2.0",
+    "gulp-watchify": "^0.2.0",
+    "jshint-stylish": "^0.4.0",
+    "react": "^0.11.1"
+  },
+  "repository": "https://github.com/plumpNation/swipe-navigator.git",
   "author": "Plumpnation",
   "license": "MIT"
 }

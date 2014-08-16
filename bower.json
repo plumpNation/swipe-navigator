@@ -1,0 +1,19 @@
+{
+  "name": "swipe-manager",
+  "version": "0.0.0",
+  "homepage": "https://github.com/plumpNation/swipe-navigator",
+  "authors": [
+    "Plumpnation"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "gsap": "~1.13.1"
+  }
+}
