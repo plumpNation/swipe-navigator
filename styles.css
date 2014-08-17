@@ -37,7 +37,11 @@ body,
   height: 100%;
   width: 100%;
   white-space: nowrap;
-  overflow: auto;
+  overflow: hidden;
+}
+
+.page-manager {
+  overflow-x: auto;
 }
 
 .page-component {

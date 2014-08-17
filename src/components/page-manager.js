@@ -1,29 +1,87 @@
 var React = require('react'),
     page = require('./page'),
-    debounce = require('debounce');
+    debounce = require('debounce'),
+    Hammer = require('hammerjs'),
+    $ = require('jquery');
 
 module.exports = React.createClass({
   getInitialState: function () {
       return {
-        pages: []
+        currentIndex: 0,
+        pages: [],
+        touching: false
       };
   },
 
-  scrollStop: function () {
+  onScrollStop: function () {
     var element = this.getDOMNode(),
-        xScroll = element.scrollLeft,
-        scrollWidth = element.scrollWidth,
-        pageWidth = scrollWidth / this.state.pages.length, // or this width??
-        nearestPageX = pageWidth * Math.round(xScroll / pageWidth);
-
-    element.scrollLeft = nearestPageX;
+        pageWidth = element.scrollWidth / this.state.pages.length, // or this width??
+        nearestPageX = pageWidth * Math.round(element.scrollLeft / pageWidth);
 
     // Scroll smoothly to nearest page
-    console.log('Scrolling has stopped at', xScroll);
+    console.log('Scrolling has stopped at', element.scrollLeft);
+
+    if (!this.state.touching) {
+      // Maybe replace this with something standalone, or greensock?
+      element.scrollLeft = nearestPageX;
+    }
+  },
+
+  onScroll: function () {
+    console.log('scrolling');
   },
 
   componentWillMount: function () {
     this.updatePages(this.props.pages);
+  },
+
+  getPageElements: function () {
+    return this.getDOMNode().getElementsByClassName('page-component');
+  },
+
+  scrollToPage: function (pageIndex) {
+    var pages = this.getPageElements();
+
+    if (pages[pageIndex]) {
+      pages[pageIndex].scrollIntoView(true);
+      this.setState({currentIndex: pageIndex});
+    }
+  },
+
+  addNavEvents: function () {
+    var element = this.getDOMNode(),
+        H = Hammer(element);
+
+    H.on('release', function (e) {
+      debugger;
+      // this.state.touching = e.type === 'touch';
+      console.log(this.state.touching);
+    }.bind(this));
+
+    H.on('swipeleft', this.scrollRight);
+    H.on('swiperight', this.scrollLeft);
+
+    $(element).on('scroll', debounce(this.onScrollStop));
+    $(element).on('scroll', this.onScroll);
+
+    element.onmouseup = function () {
+      console.log('mouseup');
+    }
+  },
+
+  scrollRight: function () {
+    console.log('swipe left');
+    this.scrollToPage(this.state.currentIndex + 1);
+  },
+
+  scrollLeft: function () {
+    console.log('swipe right');
+    this.scrollToPage(this.state.currentIndex - 1);
+  },
+
+  componentDidMount: function () {
+    H = Hammer(this.getDOMNode());
+    this.addNavEvents();
   },
 
   addPage: function (pageData) {
@@ -46,7 +104,6 @@ module.exports = React.createClass({
 
     return React.DOM.div({
       className: 'page-manager',
-      onScroll: debounce(this.scrollStop, this.props.scrollLatency || 200),
       onMouseUp: this.handleMouseUp,
     }, this.state.pages);
   }

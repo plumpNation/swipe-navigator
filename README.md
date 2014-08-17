@@ -43,3 +43,4 @@ Accessibility is high on the list of priorities also.
 - [Pocket world cup scheduler](http://pocketworldcupschedule.info/)
 - [jQuery waypoints](http://imakewebthings.com/jquery-waypoints/)
 - [Greensock throwprops](http://greensock.com/ThrowPropsPlugin-JS)
+- [Touch scroll](http://smoothdivscroll.com/touchScroller.html)
