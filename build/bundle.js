@@ -30356,8 +30356,13 @@ module.exports = React.createClass({
 
     if (pages[pageIndex]) {
       pages[pageIndex].scrollIntoView(true);
-      this.setState({currentIndex: pageIndex});
+      this.setState.currentIndex = pageIndex;
     }
+  },
+
+  onRelease: function () {
+    console.log('mouseup');
+    this.state.touching = false;
   },
 
   addNavEvents: function () {
@@ -30365,20 +30370,20 @@ module.exports = React.createClass({
         H = Hammer(element);
 
     H.on('release', function (e) {
-      debugger;
-      // this.state.touching = e.type === 'touch';
-      console.log(this.state.touching);
+      console.log('release');
     }.bind(this));
 
     H.on('swipeleft', this.scrollRight);
     H.on('swiperight', this.scrollLeft);
+    H.on('panend', this.onRelease);
+    H.on('panstart', function () {
+      this.state.touching = true;
+    }.bind(this));
 
-    $(element).on('scroll', debounce(this.onScrollStop));
-    $(element).on('scroll', this.onScroll);
-
-    element.onmouseup = function () {
-      console.log('mouseup');
-    }
+    $(element)
+      .on('scroll', this.onScroll)
+      .on('scroll', debounce(this.onScrollStop))
+      .on('mouseup', this.onRelease);
   },
 
   scrollRight: function () {
